@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">Salat Tracker</string>
-    <string name="fajr">FAJR</string>
     <string name="prayed">Prayed</string>
     <string name="prayed_late">Prayed Late</string>
     <string name="missed">Missed</string>
-    <string name="zuhr">ZUHR</string>
-    <string name="asr">ASR</string>
-    <string name="maghrib">MAGHRIB</string>
-    <string name="esha">ISHA</string>
+
+
+    <string-array name="salat_names">
+        <item>FAJR</item>
+        <item>ZUHR</item>
+        <item>ASR</item>
+        <item>MAGHRIB</item>
+        <item>ISHA</item>
+    </string-array>
+
 </resources>
