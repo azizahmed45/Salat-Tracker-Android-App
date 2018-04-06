@@ -2,6 +2,7 @@ package com.ahmed.aziz.salattracker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,21 +12,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MyListAdapter extends ArrayAdapter<String>{
+public class MyListAdapter extends ArrayAdapter<Salat>{
 
-    private String[] salatNames;
     private Activity context;
-    public MyListAdapter(@NonNull Context context, String[] salatNames) {
-        super(context, R.layout.salat_listview, salatNames);
+    private Salat[] salat;
 
-        this.salatNames = salatNames;
+    public MyListAdapter(@NonNull Context context, Salat[] salat) {
+        super(context, R.layout.salat_listview, salat);
         this.context = (Activity) context;
+        this.salat = salat;
     }
 
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View listview = inflater.inflate(R.layout.salat_listview, null, true);
 
@@ -34,7 +35,17 @@ public class MyListAdapter extends ArrayAdapter<String>{
         Button prayedLate = (Button) listview.findViewById(R.id.prayed_late_button);
         Button missedButton = (Button) listview.findViewById(R.id.missed_button);
 
-        salatName.setText(salatNames[position]);
+        salatName.setText(getItem(position).getName());
+
+        final DB db = new DB(context);
+
+        prayedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getItem(position).setOption(1);
+                db.entry(getItem(position));
+            }
+        });
 
         return listview;
     }
