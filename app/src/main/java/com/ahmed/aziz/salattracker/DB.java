@@ -1,9 +1,13 @@
 package com.ahmed.aziz.salattracker;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class DB extends SQLiteOpenHelper {
@@ -19,7 +23,7 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, date DATE, FAJR INTEGER, ZUHR INTEGER, ASR INTEGER, MAGHRIB INTEGER, ISHA INTEGER ) ");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE TEXT, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
     }
 
     @Override
@@ -29,10 +33,24 @@ public class DB extends SQLiteOpenHelper {
     }
 
 
-    public void entry(Salat salat){
+    public void entry(Salat salat, Date date){
         SQLiteDatabase db = this.getWritableDatabase();
         String salatName = salat.getName();
         int option = salat.getOption();
-        db.execSQL("INSERT INTO " + TABLE_NAME + " ( " + salatName + " ) VALUES ( " + option + " ) ");
+
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String sDate = df.format(date);
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = \"" + sDate + "\"", null);
+
+        if(cursor.getCount()<=0){
+            db.execSQL("INSERT INTO " + TABLE_NAME + " ( DATE, " + salatName + " ) VALUES ( \"" + sDate+ "\" , " + option + " ) ");
+        }
+        else{
+            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = \"" + sDate + "\"");
+        }
+        cursor.close();
+
+
     }
 }

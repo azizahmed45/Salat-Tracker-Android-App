@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Date;
+
 public class MyListAdapter extends ArrayAdapter<Salat>{
 
     private Activity context;
@@ -43,7 +45,7 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
             @Override
             public void onClick(View view) {
                 getItem(position).setOption(1);
-                db.entry(getItem(position));
+                db.entry(getItem(position), MainActivity.selectedDate);
             }
         });
 
