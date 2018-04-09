@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.Date;
 
@@ -18,6 +21,14 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
 
     private Activity context;
     private Salat[] salat;
+
+    TextView salatName;
+    ToggleButton prayedButton;
+    ToggleButton prayedLateButton;
+    ToggleButton missedButton;
+    final DB db = new DB(context);
+
+
 
     public MyListAdapter(@NonNull Context context, Salat[] salat) {
         super(context, R.layout.salat_listview, salat);
@@ -28,27 +39,50 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View listview = inflater.inflate(R.layout.salat_listview, null, true);
 
-        TextView salatName = (TextView) listview.findViewById(R.id.salat_name);
-        Button prayedButton = (Button) listview.findViewById(R.id.prayed_button);
-        Button prayedLate = (Button) listview.findViewById(R.id.prayed_late_button);
-        Button missedButton = (Button) listview.findViewById(R.id.missed_button);
+        salatName = (TextView) listview.findViewById(R.id.salat_name);
+        prayedButton = (ToggleButton) listview.findViewById(R.id.prayed_button);
+        prayedLateButton = (ToggleButton) listview.findViewById(R.id.prayed_late_button);
+        missedButton = (ToggleButton) listview.findViewById(R.id.missed_button);
 
         salatName.setText(getItem(position).getName());
 
-        final DB db = new DB(context);
 
-        prayedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getItem(position).setOption(1);
-                db.entry(getItem(position), MainActivity.selectedDate);
-            }
-        });
+        prayedButton.setOnCheckedChangeListener(buttonListener);
+        prayedLateButton.setOnCheckedChangeListener(buttonListener);
+        missedButton.setOnCheckedChangeListener(buttonListener);
+
+
+
+        prayedButton.setTag(position);
+        prayedLateButton.setTag(position);
+        missedButton.setTag(position);
+
 
         return listview;
     }
+
+    CompoundButton.OnCheckedChangeListener buttonListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if(compoundButton.getId() == prayedButton.getId()){
+                compoundButton.setChecked(b);
+                prayedLateButton.setChecked(!b);
+                missedButton.setChecked(!b);
+            }
+            else if(compoundButton.getId() == prayedLateButton.getId()){
+                compoundButton.setChecked(b);
+                prayedButton.setChecked(!b);
+                missedButton.setChecked(!b);
+            }
+            else if(compoundButton.getId() == missedButton.getId()){
+                compoundButton.setChecked(b);
+                prayedButton.setChecked(!b);
+                prayedLateButton.setChecked(!b);
+            }
+        }
+    };
 }

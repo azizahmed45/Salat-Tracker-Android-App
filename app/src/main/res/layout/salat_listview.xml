@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
@@ -8,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:background="#d7ac35">
+        android:background="@drawable/listview_bg">
 
         <TextView
             android:id="@+id/salat_name"
@@ -18,28 +19,35 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"
             android:text="FAJR"
+            android:textColor="#ffffff"
             android:textSize="25sp"/>
 
-        <Button
+        <ToggleButton
             android:id="@+id/prayed_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/prayed" />
+            android:background="@drawable/checked_button_bg"
+            android:textOn=""
+            android:textOff=""/>
 
-        <Button
+        <ToggleButton
             android:id="@+id/prayed_late_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/delayed"/>
+            android:background="@drawable/cross_button_bg"
+            android:textOn=""
+            android:textOff=""/>
 
-        <Button
+        <ToggleButton
             android:id="@+id/missed_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/missed"/>
+            android:background="@drawable/delayed_button_bg"
+            android:textOn=""
+            android:textOff=""/>
 
     </LinearLayout>
 
