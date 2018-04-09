@@ -12,9 +12,11 @@
         android:id="@+id/date_picker_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
+        android:paddingVertical="15dp"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:background="@drawable/date_view_bg">
 
         <TextView
             android:id="@+id/day_view"
@@ -48,7 +50,7 @@
         android:id="@+id/salat_listView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="8">
 
     </ListView>
 
