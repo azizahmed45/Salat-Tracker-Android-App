@@ -14,7 +14,6 @@ public class DB extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "Database.db";
     private static int DB_VERSION = 1;
-
     private final String TABLE_NAME = "report";
 
     public DB(Context context) {
@@ -23,7 +22,7 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE TEXT, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE INTEGER, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
     }
 
     @Override
@@ -38,19 +37,47 @@ public class DB extends SQLiteOpenHelper {
         String salatName = salat.getName();
         int option = salat.getOption();
 
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        String sDate = df.format(date);
+        Log.d("Date long", Long.toString(date.getTime()));
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = \"" + sDate + "\"", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = " + date.getTime()+ " ",
+                null);
 
         if(cursor.getCount()<=0){
-            db.execSQL("INSERT INTO " + TABLE_NAME + " ( DATE, " + salatName + " ) VALUES ( \"" + sDate+ "\" , " + option + " ) ");
+            db.execSQL("INSERT INTO " + TABLE_NAME + " ( DATE, " + salatName + " )" +
+                    " VALUES ( " + date.getTime()+ " , " + option + " ) ");
         }
         else{
-            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = \"" + sDate + "\"");
+            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = "
+                    + date.getTime() + " ");
         }
         cursor.close();
+        db.close();
+    }
 
+    public int[] getRow(Date selectedDate){
+        int[] options = new int[5];
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = "
+                + selectedDate.getTime() +" ", null);
 
+        Log.d("Cursor test", "" + cursor.getCount());
+        if(cursor.getCount()>0){
+            cursor.moveToFirst();
+            options[0] = cursor.getInt(2);
+            options[1] = cursor.getInt(3);
+            options[2] = cursor.getInt(4);
+            options[3] = cursor.getInt(5);
+            options[4] = cursor.getInt(6);
+        }
+        else{
+            options[0] = 0;
+            options[1] = 0;
+            options[2] = 0;
+            options[3] = 0;
+            options[4] = 0;
+        }
+        cursor.close();
+        db.close();
+        return options;
     }
 }

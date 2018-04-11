@@ -9,9 +9,12 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,12 +26,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView dateView;
     private TextView monthYearView;
     public static Date selectedDate;
+    private Salat[] salat;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        salat = new Salat[5];
 
         //Date views
         dayView = (TextView) findViewById(R.id.day_view);
@@ -36,16 +41,26 @@ public class MainActivity extends AppCompatActivity {
         monthYearView = (TextView) findViewById(R.id.mounth_year_view);
 
         //Time
-        selectedDate = Calendar.getInstance().getTime();
+        GregorianCalendar calendar = new GregorianCalendar(Calendar.getInstance().getTime().getYear() + 1900,
+                Calendar.getInstance().getTime().getMonth(), Calendar.getInstance().getTime().getDate());
+        selectedDate = new Date(calendar.getTimeInMillis());
         setDate();
-
 
         //date set listener
         setDateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                selectedDate = new Date(year-1900, month, day);
-                setDate();
+                GregorianCalendar calendar = new GregorianCalendar(year, month, day);
+                if(new Date(calendar.getTimeInMillis()).after(Calendar.getInstance().getTime())){
+                    Toast.makeText(MainActivity.this, "You can't set Future date",
+                            Toast.LENGTH_LONG).show();
+                }
+                else{
+                    selectedDate = new Date(calendar.getTimeInMillis());
+                    setDate();
+                    setList();
+                }
+
             }
         };
 
@@ -56,10 +71,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int day = selectedDate.getDate();
                 int month = selectedDate.getMonth();
-                int year = selectedDate.getYear()+1900;
+                int year = selectedDate.getYear() + 1900;
 
                 Log.d("Test: ", " " + year + " " +  month + " "  + day);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, setDateListener, year, month, day);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
+                        setDateListener, year, month, day);
                 datePickerDialog.show();
             }
         });
@@ -70,15 +86,13 @@ public class MainActivity extends AppCompatActivity {
         //Salat list
         salatNames = getResources().getStringArray(R.array.salat_names);
         //Salat name set
-        Salat[] salat = new Salat[5];
         for(int i=0; i<5; i++){
             salat[i] = new Salat();
             salat[i].setName(salatNames[i]);
         }
-
         salatListView = (ListView) findViewById(R.id.salat_listView);
-        MyListAdapter adapter = new MyListAdapter(this, salat);
-        salatListView.setAdapter(adapter);
+        setList();
+
     }
 
 
@@ -92,5 +106,10 @@ public class MainActivity extends AppCompatActivity {
         dayView.setText(dayName.format(selectedDate));
         dateView.setText(dateFormat.format(selectedDate));
         monthYearView.setText(monthName.format(selectedDate) + ", " + yearFormat.format(selectedDate));
+    }
+
+    private void setList(){
+        MyListAdapter adapter = new MyListAdapter(this, salat);
+        salatListView.setAdapter(adapter);
     }
 }

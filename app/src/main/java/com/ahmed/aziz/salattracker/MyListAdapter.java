@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,12 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
 
     private Activity context;
     private Salat[] salat;
-
-    TextView salatName;
-    ToggleButton[] prayedButton = new ToggleButton[5];
-    ToggleButton[] prayedLateButton = new ToggleButton[5];
-    ToggleButton[] missedButton = new ToggleButton[5];
-    final DB db = new DB(context);
+    private TextView salatName;
+    private ToggleButton[] prayedButton = new ToggleButton[5];
+    private ToggleButton[] prayedLateButton = new ToggleButton[5];
+    private ToggleButton[] missedButton = new ToggleButton[5];
+    int[] options;
+    private final DB db;
 
 
 
@@ -34,6 +35,9 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
         super(context, R.layout.salat_listview, salat);
         this.context = (Activity) context;
         this.salat = salat;
+
+        db = new DB(context);
+        options = db.getRow(MainActivity.selectedDate);
     }
 
 
@@ -50,37 +54,69 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
 
         salatName.setText(getItem(position).getName());
 
+        salat[position].setOption(options[position]);
+        //Set Button Options
+        if(salat[position].getOption() == 1){
+            prayedButton[position].setChecked(true);
+        }
+        else if(salat[position].getOption() == 2){
+            missedButton[position].setChecked(true);
+        }
+        else if(salat[position].getOption() == 3){
+            prayedLateButton[position].setChecked(true);
+        }
+
 
         prayedButton[position].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
+                    salat[position].setOption(1);
+                    db.entry(salat[position], MainActivity.selectedDate);
+
                     prayedLateButton[position].setChecked(!b);
                     missedButton[position].setChecked(!b);
                 }
-
-            }
-        });
-        prayedLateButton[position].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    prayedButton[position].setChecked(!b);
-                    missedButton[position].setChecked(!b);
+                else{
+                    salat[position].setOption(0);
+                    db.entry(salat[position], MainActivity.selectedDate);
                 }
             }
         });
+
         missedButton[position].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b){
+                    salat[position].setOption(2);
+                    db.entry(salat[position], MainActivity.selectedDate);
+
                     prayedButton[position].setChecked(!b);
                     prayedLateButton[position].setChecked(!b);
                 }
-
+                else{
+                    salat[position].setOption(0);
+                    db.entry(salat[position], MainActivity.selectedDate);
+                }
             }
         });
 
+        prayedLateButton[position].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    salat[position].setOption(3);
+                    db.entry(salat[position], MainActivity.selectedDate);
+
+                    prayedButton[position].setChecked(!b);
+                    missedButton[position].setChecked(!b);
+                }
+                else{
+                    salat[position].setOption(0);
+                    db.entry(salat[position], MainActivity.selectedDate);
+                }
+            }
+        });
 
         return listview;
     }
