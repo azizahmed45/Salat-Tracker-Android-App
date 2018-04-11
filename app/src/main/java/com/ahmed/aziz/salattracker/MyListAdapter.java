@@ -26,7 +26,7 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
     private ToggleButton[] prayedButton = new ToggleButton[5];
     private ToggleButton[] prayedLateButton = new ToggleButton[5];
     private ToggleButton[] missedButton = new ToggleButton[5];
-    int[] options;
+    private int[] options;
     private final DB db;
 
 
@@ -49,8 +49,8 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
 
         salatName = (TextView) listview.findViewById(R.id.salat_name);
         prayedButton[position] = (ToggleButton) listview.findViewById(R.id.prayed_button);
-        prayedLateButton[position] = (ToggleButton) listview.findViewById(R.id.prayed_late_button);
         missedButton[position] = (ToggleButton) listview.findViewById(R.id.missed_button);
+        prayedLateButton[position] = (ToggleButton) listview.findViewById(R.id.prayed_late_button);
 
         salatName.setText(getItem(position).getName());
 
@@ -66,7 +66,6 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
             prayedLateButton[position].setChecked(true);
         }
 
-
         prayedButton[position].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -77,7 +76,10 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
                     prayedLateButton[position].setChecked(!b);
                     missedButton[position].setChecked(!b);
                 }
-                else{
+                else if(!prayedButton[position].isChecked() &&
+                        !missedButton[position].isChecked() &&
+                        !prayedLateButton[position].isChecked()){
+
                     salat[position].setOption(0);
                     db.entry(salat[position], MainActivity.selectedDate);
                 }
@@ -94,7 +96,9 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
                     prayedButton[position].setChecked(!b);
                     prayedLateButton[position].setChecked(!b);
                 }
-                else{
+                else if(prayedButton[position].isChecked() &&
+                        missedButton[position].isChecked() &&
+                        prayedLateButton[position].isChecked()){
                     salat[position].setOption(0);
                     db.entry(salat[position], MainActivity.selectedDate);
                 }
@@ -111,7 +115,9 @@ public class MyListAdapter extends ArrayAdapter<Salat>{
                     prayedButton[position].setChecked(!b);
                     missedButton[position].setChecked(!b);
                 }
-                else{
+                else if(prayedButton[position].isChecked() &&
+                        missedButton[position].isChecked() &&
+                        prayedLateButton[position].isChecked()){
                     salat[position].setOption(0);
                     db.entry(salat[position], MainActivity.selectedDate);
                 }

@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 int month = selectedDate.getMonth();
                 int year = selectedDate.getYear() + 1900;
 
-                Log.d("Test: ", " " + year + " " +  month + " "  + day);
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
                         setDateListener, year, month, day);
                 datePickerDialog.show();

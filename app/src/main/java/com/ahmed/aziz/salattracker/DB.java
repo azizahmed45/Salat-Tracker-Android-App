@@ -37,8 +37,6 @@ public class DB extends SQLiteOpenHelper {
         String salatName = salat.getName();
         int option = salat.getOption();
 
-        Log.d("Date long", Long.toString(date.getTime()));
-
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = " + date.getTime()+ " ",
                 null);
 
@@ -60,7 +58,6 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = "
                 + selectedDate.getTime() +" ", null);
 
-        Log.d("Cursor test", "" + cursor.getCount());
         if(cursor.getCount()>0){
             cursor.moveToFirst();
             options[0] = cursor.getInt(2);

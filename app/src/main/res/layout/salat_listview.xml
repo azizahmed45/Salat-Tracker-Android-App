@@ -32,7 +32,7 @@
             android:textOff=""/>
 
         <ToggleButton
-            android:id="@+id/prayed_late_button"
+            android:id="@+id/missed_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -41,7 +41,7 @@
             android:textOff=""/>
 
         <ToggleButton
-            android:id="@+id/missed_button"
+            android:id="@+id/prayed_late_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
