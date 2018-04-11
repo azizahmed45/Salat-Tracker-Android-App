@@ -22,7 +22,7 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE INTEGER, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE TEXT, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
     }
 
     @Override
@@ -36,17 +36,20 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String salatName = salat.getName();
         int option = salat.getOption();
+        String sDate = new java.sql.Date(date.getTime()).toString();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = " + date.getTime()+ " ",
+        Log.d("SQL Date", "" + sDate);
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = '" + sDate + "' ",
                 null);
 
         if(cursor.getCount()<=0){
             db.execSQL("INSERT INTO " + TABLE_NAME + " ( DATE, " + salatName + " )" +
-                    " VALUES ( " + date.getTime()+ " , " + option + " ) ");
+                    " VALUES ( '" + sDate + "' , " + option + " ) ");
         }
         else{
-            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = "
-                    + date.getTime() + " ");
+            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = '"
+                    + sDate + "' ");
         }
         cursor.close();
         db.close();
@@ -54,9 +57,10 @@ public class DB extends SQLiteOpenHelper {
 
     public int[] getRow(Date selectedDate){
         int[] options = new int[5];
+        String sDate = new java.sql.Date(selectedDate.getTime()).toString();
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = "
-                + selectedDate.getTime() +" ", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = '"
+                + sDate +"' ", null);
 
         if(cursor.getCount()>0){
             cursor.moveToFirst();
