@@ -1,5 +1,6 @@
 package com.ahmed.aziz.salattracker;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +16,14 @@ public class DB extends SQLiteOpenHelper {
     private static final String DB_NAME = "Database.db";
     private static int DB_VERSION = 1;
     private final String TABLE_NAME = "report";
+    private final String KEY_ID = "_id";
+    private final String KEY_DATE = "DATE";
+    private final String KEY_FAJR = "FAJR";
+    private final String KEY_ZUHR = "ZUHR";
+    private final String KEY_ASR = "ASR";
+    private final String KEY_MAGHRIB = "MAGHRIB";
+    private final String KEY_ISHA = "ISHA";
+
 
     public DB(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -22,7 +31,10 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, DATE TEXT, FAJR INTEGER DEFAULT 0, ZUHR INTEGER DEFAULT 0, ASR INTEGER DEFAULT 0, MAGHRIB INTEGER DEFAULT 0, ISHA INTEGER DEFAULT 0 ) ");
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " ( _id INTEGER PRIMARY KEY, " + KEY_DATE + " TEXT," +
+                " " + KEY_FAJR + " INTEGER DEFAULT 0, " + KEY_ZUHR + " INTEGER DEFAULT 0, " + KEY_ASR +
+                " INTEGER DEFAULT 0, " + KEY_MAGHRIB + " INTEGER DEFAULT 0, " + KEY_ISHA +
+                " INTEGER DEFAULT 0 ) ");
     }
 
     @Override
@@ -34,6 +46,7 @@ public class DB extends SQLiteOpenHelper {
 
     public void entry(Salat salat, Date date){
         SQLiteDatabase db = this.getWritableDatabase();
+
         String salatName = salat.getName();
         int option = salat.getOption();
         String sDate = new java.sql.Date(date.getTime()).toString();
@@ -43,13 +56,15 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE DATE = '" + sDate + "' ",
                 null);
 
+        ContentValues values = new ContentValues();
+        values.put(KEY_DATE, sDate);
+        values.put(salatName, option);
+
         if(cursor.getCount()<=0){
-            db.execSQL("INSERT INTO " + TABLE_NAME + " ( DATE, " + salatName + " )" +
-                    " VALUES ( '" + sDate + "' , " + option + " ) ");
+            db.insert(TABLE_NAME, null, values);
         }
         else{
-            db.execSQL("UPDATE " + TABLE_NAME + " SET " + salatName + " = " + option + " WHERE DATE = '"
-                    + sDate + "' ");
+            db.update(TABLE_NAME,values, KEY_DATE + " = ?", new String[] {sDate});
         }
         cursor.close();
         db.close();
